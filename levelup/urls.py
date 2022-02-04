@@ -7,7 +7,7 @@ from levelupapi.views import GameTypeView
 from levelupapi.views import EventView
 from levelupapi.views import GameView
 
-router = routers.DefaultRouter(trailing_slash=True)
+router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'gametypes', GameTypeView, 'gametype')
 router.register(r'events', EventView, 'event')
 router.register(r'games', GameView, 'game')

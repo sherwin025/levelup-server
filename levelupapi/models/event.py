@@ -9,3 +9,5 @@ class Event(models.Model):
     time = models.TimeField()
     organizer = models.ForeignKey("Gamer", on_delete=models.CASCADE)
     attendees = models.ManyToManyField("Gamer", through="EventGamer", related_name="attending")
+    
+    

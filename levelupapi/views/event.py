@@ -33,14 +33,17 @@ class EventView(ViewSet):
     def list(self, request):
         events = Event.objects.all()
         event_game = request.query_params.get('game', None)
+        gamer = Gamer.objects.get(user=request.auth.user)
+        
         if event_game is not None:
             events = events.filter(game_id=event_game)
+        for event in events:
+            event.joined = gamer in event.attendees.all()
         serializer = EventSerializer(events, many=True)
         return Response(serializer.data)
 
     def create(self, request):
         organizer_id = Gamer.objects.get(user=request.auth.user)
-
         try:
             serializer = CreateEventSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
@@ -68,7 +71,7 @@ class EventView(ViewSet):
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = ("id", "game", "description", "date", "time", "organizer")
+        fields = ("id", "game", "description", "date", "time", "organizer", "attendees", "joined")
         depth = 2
 
 

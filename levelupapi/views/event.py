@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework import serializers, status
 from levelupapi.models import Event, Game, Gamer
 from rest_framework.decorators import action
+from django.db.models import Count
+
 
 
 class EventView(ViewSet):
@@ -24,14 +26,14 @@ class EventView(ViewSet):
     
     def retrieve(self, request, pk):
         try:
-            event = Event.objects.get(pk=pk)
+            event= Event.objects.annotate(attendees_count=Count('attendees')).get(pk=pk)
             serializer = EventSerializer(event)
             return Response(serializer.data)
         except Event.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
 
     def list(self, request):
-        events = Event.objects.all()
+        events = Event.objects.annotate(attendees_count=Count('attendees'))
         event_game = request.query_params.get('game', None)
         gamer = Gamer.objects.get(user=request.auth.user)
         
@@ -71,7 +73,7 @@ class EventView(ViewSet):
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = ("id", "game", "description", "date", "time", "organizer", "attendees", "joined")
+        fields = ("id", "game", "description", "date", "time", "organizer", "attendees", "joined", "attendees_count")
         depth = 2
 
 

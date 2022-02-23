@@ -6,6 +6,10 @@ from rest_framework import routers
 from levelupapi.views import GameTypeView
 from levelupapi.views import EventView
 from levelupapi.views import GameView
+from django.urls import path
+from levelupreports.views import UserGameList
+from levelupreports.views import UserEventList
+
 
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'gametypes', GameTypeView, 'gametype')
@@ -18,4 +22,6 @@ urlpatterns = [
     path('api-auth', include('rest_framework.urls', namespace='rest_framework')),
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
+    path('reports/usergames', UserGameList.as_view()),
+    path('reports/userevents', UserEventList.as_view()),
 ]
